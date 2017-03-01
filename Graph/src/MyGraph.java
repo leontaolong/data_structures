@@ -8,9 +8,7 @@ public class MyGraph implements Graph {
 	// you will need some private fields to represent the graph
 	// you are also likely to want some private helper methods
 
-	private Map<Vertex, Set<Edge>> graphMap = new HashMap<>();
-	private final Collection<Vertex> v;
-	private final Collection<Edge> e;
+	private Map<Vertex, Set<Edge>> graphMap;
 	/**
 	 * Creates a MyGraph object with the given collection of vertices and the
 	 * given collection of edges.
@@ -19,24 +17,27 @@ public class MyGraph implements Graph {
 	 *            a collection of the vertices in this graph
 	 * @param e
 	 *            a collection of the edges in this graph
+	 * @throw IllegalArgumentException if v and e are null,
+	 * 		source or destination are not in the collection of vertex,
+	 * 		any edge weight is negative,
+	 * 		or the directed edge with different weight exists 
 	 */
 	public MyGraph(Collection<Vertex> v, Collection<Edge> e) {
 		if (v == null || e == null)
 			throw new IllegalArgumentException();
-		this.v = v;
-		this.e = e;
-		for (Vertex vertex : this.v) {
-			graphMap.put(vertex, new HashSet<Edge>());
-		}
-		for (Edge edge: this.e) {
-			if (!this.v.contains(edge.getSource()) || !this.v.contains(edge.getDestination()) || edge.getWeight() < 0)
+		graphMap = new HashMap<>();
+		
+		for (Vertex vertex : v)
+			graphMap.put(new Vertex(vertex.getLabel()), new HashSet<Edge>());
+		for (Edge edge: e) {
+			if (!graphMap.keySet().contains(edge.getSource()) || !graphMap.keySet().contains(edge.getDestination()) || edge.getWeight() < 0)
 				throw new IllegalArgumentException();
 			Vertex source = edge.getSource();
 			for (Edge adjEdge: graphMap.get(source)) {
 				if (adjEdge.getDestination().equals(edge.getDestination()) && adjEdge.getWeight() != edge.getWeight())
 					throw new IllegalArgumentException();
 			}
-			graphMap.get(source).add(edge);
+			graphMap.get(source).add(new Edge(edge.getSource(), edge.getDestination(), edge.getWeight()));
 		}
 	}
 
@@ -52,7 +53,6 @@ public class MyGraph implements Graph {
 		}
 		return result;
 	}
-
 	/**
 	 * Return the collection of edges of this graph
 	 * 
@@ -61,9 +61,8 @@ public class MyGraph implements Graph {
 	public Collection<Edge> edges() {
 		Set<Edge> result = new HashSet<>();
 		for (Set<Edge> edgeSet : graphMap.values()) {
-			for (Edge e : edgeSet) {
+			for (Edge e : edgeSet)
 				result.add(new Edge(e.getSource(), e.getDestination(), e.getWeight()));
-			}
 		}
 		return result;
 	}
@@ -77,14 +76,14 @@ public class MyGraph implements Graph {
 	 *            one of the vertices in the graph
 	 * @return an iterable collection of vertices adjacent to v in the graph
 	 * @throws IllegalArgumentException
-	 *             if v does not exist.
+	 *             if v is null or does not exist
 	 */
 	public Collection<Vertex> adjacentVertices(Vertex v) {
 		if (v == null || !graphMap.containsKey(v))
 			throw new IllegalArgumentException();
 		Set<Vertex> result = new HashSet<>();
 		for (Edge e : graphMap.get(v))
-			result.add(e.getDestination());
+			result.add(new Vertex(e.getDestination().getLabel()));
 		return result;
 	}
 
@@ -99,7 +98,7 @@ public class MyGraph implements Graph {
 	 * @return cost of edge if there is a directed edge from a to b in the
 	 *         graph, return -1 otherwise.
 	 * @throws IllegalArgumentException
-	 *             if a or b do not exist.
+	 *             if either a or b is null and does not exist.
 	 */
 	public int edgeCost(Vertex a, Vertex b) {
 		if (!graphMap.containsKey(a) || !graphMap.containsKey(b))

@@ -1,0 +1,4 @@
+<SEA, SFO, 679>
+<SFO, SEA, 679>
+<SEA, LAX, 954>
+<SFO, LA, 338>
