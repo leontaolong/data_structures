@@ -3,6 +3,8 @@
  */
 public class Vertex {
 	private final String label;   // label attached to this vertex
+	private int cost;
+	private Vertex source;
 
 	/**
 	 * Construct a new vertex
@@ -12,6 +14,7 @@ public class Vertex {
 		if(label == null)
 			throw new IllegalArgumentException("null");
 		this.label = label;
+		cost = Integer.MAX_VALUE;
 	}
 
 	/**
@@ -54,5 +57,24 @@ public class Vertex {
 		}
 	}
 
+    public int compare(Vertex a, Vertex b) {
+        return a.getCost() - b.getCost();
+    }
 
+	
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
+	
+	public int getCost() {
+		return cost;
+	}
+	
+	public void setSource(Vertex source) {
+		this.source = source;
+	}
+	
+	public Vertex getSource() {
+		return source;
+	}
 }

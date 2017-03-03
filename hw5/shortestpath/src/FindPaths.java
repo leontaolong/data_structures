@@ -35,8 +35,15 @@ public class FindPaths {
 				System.exit(1);
 			}
 			
-			// YOUR CODE HERE: call shortestPath and print
-			// out the result
+			System.out.println("Shortest path from " + a + " to " + b);
+			Path path = g.shortestPath(a, b);
+			if (path == null)
+				System.out.println("does not exist");
+			else {
+				for (Vertex vertex: path.vertices)
+					System.out.print(vertex + " ");
+				System.out.println(path.cost);
+			}
 		}
 	}
 

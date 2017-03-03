@@ -109,4 +109,50 @@ public class MyGraph implements Graph {
 		}
 		return -1;
 	}
+	
+    /**
+     * Returns the shortest path from a to b in the graph, or null if there is
+     * no such path.  Assumes all edge weights are nonnegative.
+     * Uses Dijkstra's algorithm.
+     * @param a the starting vertex
+     * @param b the destination vertex
+     * @return a Path where the vertices indicate the path from a to b in order
+     *   and contains a (first) and b (last) and the cost is the cost of 
+     *   the path. Returns null if b is not reachable from a.
+     * @throws IllegalArgumentException if a or b does not exist.
+     */
+    public Path shortestPath(Vertex a, Vertex b) {
+    	if (!graphMap.keySet().contains(a) || !graphMap.keySet().contains(b))
+    		throw new IllegalArgumentException();
+		List<Vertex> pathList = new ArrayList<>();
+		Vertex source = new Vertex(a.getLabel());
+		Vertex dest = new Vertex(b.getLabel());
+    	if (source.equals(dest)) {
+    		pathList.add(source);
+    		return new Path(pathList, 0);
+    	}
+    	Queue<Vertex> pendingQ = new PriorityQueue<>();
+    	Set<Vertex> knownSet = new HashSet<>();
+    	dest.setCost(0);
+    	Vertex known = source;
+    	knownSet.add(known);
+    	while (!knownSet.equals(graphMap.keySet()) || !knownSet.contains(dest)) {
+    		for (Edge e: graphMap.get(known)) {
+    			Vertex adjVertex = e.getDestination();
+    			adjVertex.setCost(known.getCost() + e.getWeight());
+    			adjVertex.setSource(known);
+    			pendingQ.add(adjVertex);
+    		}
+    		known = pendingQ.poll();
+    		knownSet.add(known);	
+    	}
+    	if (!knownSet.contains(dest))
+    		return null;
+    	Vertex back = dest;
+    	while (back.getSource() != null) {
+    		pathList.add(back.getSource());
+    	}
+    	Collections.reverse(pathList);
+    	return new Path(pathList, dest.getCost());
+    }
 }
