@@ -124,19 +124,22 @@ public class MyGraph implements Graph {
     public Path shortestPath(Vertex a, Vertex b) {
     	if (!graphMap.keySet().contains(a) || !graphMap.keySet().contains(b))
     		throw new IllegalArgumentException();
+    	
 		List<Vertex> pathList = new ArrayList<>();
 		Vertex source = new Vertex(a.getLabel());
 		Vertex dest = new Vertex(b.getLabel());
+		
     	if (source.equals(dest)) {
     		pathList.add(source);
     		return new Path(pathList, 0);
     	}
+    	
     	Queue<Vertex> pendingQ = new PriorityQueue<>();
-    	Set<Vertex> knownSet = new HashSet<>();
-    	dest.setCost(0);
+    	List<Vertex> knownSet = new ArrayList<>();
+    	source.setCost(0);
     	Vertex known = source;
     	knownSet.add(known);
-    	while (!knownSet.equals(graphMap.keySet()) || !knownSet.contains(dest)) {
+    	while (!knownSet.contains(dest)) {
     		for (Edge e: graphMap.get(known)) {
     			Vertex adjVertex = e.getDestination();
     			adjVertex.setCost(known.getCost() + e.getWeight());
@@ -146,13 +149,19 @@ public class MyGraph implements Graph {
     		known = pendingQ.poll();
     		knownSet.add(known);	
     	}
+    	System.out.println(knownSet.toString());
     	if (!knownSet.contains(dest))
     		return null;
-    	Vertex back = dest;
+    	
+    	Vertex back = knownSet.get(knownSet.size() - 1);
+    	pathList.add(back);
+    	int totalCost = back.getCost();
     	while (back.getSource() != null) {
     		pathList.add(back.getSource());
+    		back = back.getSource();
     	}
     	Collections.reverse(pathList);
-    	return new Path(pathList, dest.getCost());
+    	System.out.println(pathList.toString());
+    	return new Path(pathList, totalCost);
     }
 }

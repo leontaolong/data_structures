@@ -1,7 +1,7 @@
 /**
  * Representation of a graph vertex
  */
-public class Vertex {
+public class Vertex implements Comparable<Vertex> {
 	private final String label;   // label attached to this vertex
 	private int cost;
 	private Vertex source;
@@ -56,11 +56,6 @@ public class Vertex {
 		    return label.equals(other.label);
 		}
 	}
-
-    public int compare(Vertex a, Vertex b) {
-        return a.getCost() - b.getCost();
-    }
-
 	
 	public void setCost(int cost) {
 		this.cost = cost;
@@ -76,5 +71,10 @@ public class Vertex {
 	
 	public Vertex getSource() {
 		return source;
+	}
+
+	@Override
+	public int compareTo(Vertex o) {
+		return getCost() - o.getCost();
 	}
 }
