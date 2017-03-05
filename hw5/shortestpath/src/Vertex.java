@@ -3,8 +3,9 @@
  */
 public class Vertex implements Comparable<Vertex> {
 	private final String label;   // label attached to this vertex
-	private int cost;
-	private Vertex source;
+	private int cost; // current lowest cost used in finding shortest path
+	private Vertex source; // current source vertex used in finding shortest path
+	private boolean known; // if it's visited, used in finding shortest path
 
 	/**
 	 * Construct a new vertex
@@ -16,7 +17,7 @@ public class Vertex implements Comparable<Vertex> {
 		this.label = label;
 		cost = Integer.MAX_VALUE;
 	}
-
+	
 	/**
 	 * Get a vertex label
 	 * @return the label attached to this vertex
@@ -57,22 +58,57 @@ public class Vertex implements Comparable<Vertex> {
 		}
 	}
 	
+	/**
+	 * set the current lowest cost of the vertex
+	 * @param the current lowest cost of the Vertex
+	 */
 	public void setCost(int cost) {
 		this.cost = cost;
 	}
 	
+	/**
+	 * @return the current cost of the vertex
+	 */
 	public int getCost() {
 		return cost;
 	}
 	
+	/**
+	 * set the souce as given
+	 * @param a vertex as source
+	 */
 	public void setSource(Vertex source) {
-		this.source = source;
+		if (source != null)
+			this.source = new Vertex(source.getLabel());
 	}
 	
+	/**
+	 * @return the current source of the vertex
+	 * @return null as default if not specified
+	 */
 	public Vertex getSource() {
-		return source;
+		if (source == null)
+			return null;
+		return new Vertex(source.getLabel());
 	}
-
+	
+	/**
+	 * set known to be true
+	 */
+	public void setKnown() {
+		known = true;
+	}
+	
+	/**
+	 * @return true is vertex is known, false otherwise
+	 */
+	public boolean isKnown() {
+		return known;
+	}
+	
+	/**
+	 * the compare method for comparing to Vertex based on their current lowest cost
+	 */
 	@Override
 	public int compareTo(Vertex o) {
 		return getCost() - o.getCost();

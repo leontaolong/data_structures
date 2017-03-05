@@ -124,44 +124,85 @@ public class MyGraph implements Graph {
     public Path shortestPath(Vertex a, Vertex b) {
     	if (!graphMap.keySet().contains(a) || !graphMap.keySet().contains(b))
     		throw new IllegalArgumentException();
-    	
 		List<Vertex> pathList = new ArrayList<>();
 		Vertex source = new Vertex(a.getLabel());
 		Vertex dest = new Vertex(b.getLabel());
-		
     	if (source.equals(dest)) {
     		pathList.add(source);
     		return new Path(pathList, 0);
     	}
-    	
-    	Queue<Vertex> pendingQ = new PriorityQueue<>();
-    	List<Vertex> knownSet = new ArrayList<>();
-    	source.setCost(0);
-    	Vertex known = source;
-    	knownSet.add(known);
-    	while (!knownSet.contains(dest)) {
-    		for (Edge e: graphMap.get(known)) {
-    			Vertex adjVertex = e.getDestination();
-    			adjVertex.setCost(known.getCost() + e.getWeight());
-    			adjVertex.setSource(known);
-    			pendingQ.add(adjVertex);
+    	return Dijkstra(source, dest);
+    }
+    
+    /**
+     * uses Dijkstra's algorithms to find the shortest path (helper method)
+     * @param a the starting vertex
+     * @param b the destination vertex
+     * @return a Path where the vertices indicate the path from a to b in order
+     *   and contains a (first) and b (last) and the cost is the cost of 
+     *   the path. Returns null if b is not reachable from a.
+     */
+    private Path Dijkstra(Vertex source, Vertex dest) {
+    	Map<String, Vertex> vMap = new HashMap<>(); // manage all vertices
+    	Queue<Vertex> prioQ = new PriorityQueue<>(); // get vertex of lowest cost 
+    	Vertex destFound = null;
+    	// put all vertices in the vertex map and priority queue, set start's cost to 0
+    	for (Vertex v : graphMap.keySet()) {
+    		Vertex newV = new Vertex(v.getLabel());
+    		if (newV.equals(source))
+    			newV.setCost(0);
+    		prioQ.add(newV);
+    		vMap.put(newV.getLabel(), newV);
+    	}
+    	Vertex known;
+    	while (!prioQ.isEmpty()) {
+    		known = prioQ.poll();
+    		known.setKnown();
+    		// if the polled out vertex equals destination 
+    		// and it's been visited from starting point, 
+    		// meaning the cost has been updated, result is found and break the searching loop
+    		if (known.equals(dest) && known.getCost() != Integer.MAX_VALUE) {
+    			destFound = known;
+    			break;
     		}
-    		known = pendingQ.poll();
-    		knownSet.add(known);	
+    		// update each adjacent vertices if necessary in the vertex Map and priority queue
+    		for (Edge e: graphMap.get(known)) {
+    			Vertex adjVertex = vMap.get(e.getDestination().getLabel());
+    			if (!adjVertex.isKnown() && adjVertex.getCost() > known.getCost() + e.getWeight()) {
+    				prioQ.remove(adjVertex);
+    				vMap.remove(adjVertex);
+    				adjVertex.setCost(known.getCost() + e.getWeight());
+    				adjVertex.setSource(known);
+    				vMap.put(adjVertex.getLabel(), adjVertex);
+        			prioQ.add(adjVertex);  			}
+    		}	
     	}
-    	System.out.println(knownSet.toString());
-    	if (!knownSet.contains(dest))
+    	if (destFound == null) {
     		return null;
-    	
-    	Vertex back = knownSet.get(knownSet.size() - 1);
-    	pathList.add(back);
-    	int totalCost = back.getCost();
-    	while (back.getSource() != null) {
-    		pathList.add(back.getSource());
-    		back = back.getSource();
     	}
-    	Collections.reverse(pathList);
-    	System.out.println(pathList.toString());
-    	return new Path(pathList, totalCost);
+    	return new Path(makePathList(vMap, destFound), destFound.getCost());
+    }
+    
+    /**
+     * make a list of vertices which marks each vertex along the path way
+     * in the order of from starting to end point
+     * @param vMap the current collection of Vertices with updated source and cost info
+     * @param destFound the end point Vertex with updated source and cost info
+     * @return a List of Vertices marking the path of the shortest path (in the order of from starting to end)
+     */
+    private List<Vertex> makePathList(Map<String, Vertex> vMap, Vertex destFound) {
+    	List<Vertex> result = new ArrayList<>();
+    	Vertex back = destFound;
+    	while (back != null) {
+    		result.add(back);
+    		if (back.getSource() == null)
+    			back = null;
+    		else {
+    			Vertex sourceV = vMap.get(back.getLabel()).getSource();
+    			back = vMap.get(sourceV.getLabel());
+    		}
+    	}
+    	Collections.reverse(result); // reverse the order so it's from start to end
+    	return result;
     }
 }

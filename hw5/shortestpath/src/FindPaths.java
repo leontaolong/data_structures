@@ -42,6 +42,7 @@ public class FindPaths {
 			else {
 				for (Vertex vertex: path.vertices)
 					System.out.print(vertex + " ");
+				System.out.println();
 				System.out.println(path.cost);
 			}
 		}
