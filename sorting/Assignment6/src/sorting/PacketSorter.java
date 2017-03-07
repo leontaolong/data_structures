@@ -1,5 +1,6 @@
 package sorting;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -32,9 +33,59 @@ public class PacketSorter {
      *            The comparator the will be used to compare two packets.
      */
     public static void mergeSort(Packet[] array, Comparator<Packet> comparator) {
-        // TODO: Add your merge sort algorithm here.
-        throw new UnsupportedOperationException();
+		Packet[] result = mergeSortHelper(array, comparator);
+		for (int i = 0; i < result.length; i++) {
+			array[i] = result[i];
+		}
     }
+    
+	private static Packet[] mergeSortHelper(Packet[] array, Comparator<Packet> comparator) {
+		if (array.length < 2) {
+			return array;
+		}
+		int mid = array.length / 2;
+		Packet[] smallHalf = mergeSortHelper(Arrays.copyOfRange(array, 0, mid), comparator);
+		Packet[] largeHalf = mergeSortHelper(Arrays.copyOfRange(array, mid, array.length), comparator);
+		return merge(smallHalf, largeHalf, comparator);
+	}
+	
+	private static Packet[] merge(Packet[] arr1, Packet[] arr2, Comparator<Packet> comparator) {
+		int resultSize = arr1.length + arr2.length;
+		Packet[] result = new Packet[resultSize];
+		int arr1Index = 0;
+		int arr2Index = 0;
+		int resultIndex = 0;
+		boolean oneFinish = false;
+		while (!oneFinish) {
+			int diff = comparator.compare(arr1[arr1Index], arr2[arr2Index]);
+			if (diff <= 0) {
+				result[resultIndex] = arr1[arr1Index];
+				arr1Index++;
+			} else {
+				result[resultIndex] = arr2[arr2Index];
+				arr2Index++;
+			}
+			resultIndex++;
+			if (arr1Index == arr1.length) {
+				oneFinish = true;
+				result = finishTheRest(result, resultIndex, arr2, arr2Index);
+			}
+			if (arr2Index == arr2.length) {
+				oneFinish = true;
+				result = finishTheRest(result, resultIndex, arr1, arr1Index);
+			}
+		}
+		return result;
+	}
+	
+	private static Packet[] finishTheRest(Packet[] result, int resultIndex, Packet[] arr, int arrIndex) {
+		while (arrIndex < arr.length) {
+			result[resultIndex] = arr[arrIndex];
+			resultIndex++;
+			arrIndex++;
+		}
+		return result;
+	}
 
     /**
      * Sort the array of packets in ascending order using selection sort.
@@ -52,8 +103,19 @@ public class PacketSorter {
      */
     public static void selectionSort(Packet[] array,
             Comparator<Packet> comparator) {
-        // TODO: Add your selection sort algorithm here.
-        throw new UnsupportedOperationException();
+		for (int i = 0; i < array.length - 1; i++) {
+			int nextIndex = i + 1;
+			int minIndex = i;
+			for (int j = nextIndex; j < array.length; j++) {
+				int result = comparator.compare(array[minIndex], array[j]);
+				if (result > 0)
+					minIndex = j;
+			}
+			Packet temp = array[i];
+			array[i] = array[minIndex];
+			array[minIndex] = temp;
+		}
+		// throw new UnsupportedOperationException();
     }
 
     /**
