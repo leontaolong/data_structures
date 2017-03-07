@@ -19,7 +19,7 @@ import java.net.Socket;
  *
  */
 public class PacketReceiver {
-    public static final int MY_STUDENT_NUMBER;
+    public static final int MY_STUDENT_NUMBER = 1561256;
     
     public static final int PORT_NUMBER = 33333;
     // connect to attu1

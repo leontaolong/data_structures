@@ -1,4 +1,5 @@
 package sorting;
+
 import java.util.*;
 
 import java.util.Comparator;
@@ -32,44 +33,60 @@ public class IntegerSorter {
 	 *            The comparator the will be used to compare two integers.
 	 */
 	public static void mergeSort(Integer[] array, Comparator<Integer> comparator) {
-		array = mergeSortHelper(array, comparator);
-//		throw new UnsupportedOperationException();
+		Integer[] result = mergeSortHelper(array, comparator);
+		for (int i = 0; i < result.length; i++) {
+			array[i] = result[i];
+		}
+		// throw new UnsupportedOperationException();
 	}
-	
-	private static Integer[] mergeSortHelper(Integer[] array, Comparator<Integer> comparator)  {
+
+	private static Integer[] mergeSortHelper(Integer[] array, Comparator<Integer> comparator) {
 		if (array.length < 2) {
 			return array;
 		}
-		int mid = array.length/2;
+		int mid = array.length / 2;
 		Integer[] smallHalf = mergeSortHelper(Arrays.copyOfRange(array, 0, mid), comparator);
 		Integer[] largeHalf = mergeSortHelper(Arrays.copyOfRange(array, mid, array.length), comparator);
 		return merge(smallHalf, largeHalf, comparator);
 	}
-	
+
 	private static Integer[] merge(Integer[] arr1, Integer[] arr2, Comparator<Integer> comparator) {
 		int resultSize = arr1.length + arr2.length;
 		Integer[] result = new Integer[resultSize];
 		int arr1Index = 0;
 		int arr2Index = 0;
-		for (int i = 0; i < resultSize; i++) {
+		int resultIndex = 0;
+		boolean oneFinish = false;
+		while (!oneFinish) {
 			int diff = comparator.compare(arr1[arr1Index], arr2[arr2Index]);
-			if (diff >= 0) {
-				result[i] = arr1[arr1Index];
-				arr1Index = updateIndex(arr1Index, arr1);
+			if (diff <= 0) {
+				result[resultIndex] = arr1[arr1Index];
+				arr1Index++;
 			} else {
-				result[i] = arr2[arr2Index];
-				arr2Index = updateIndex(arr2Index, arr2);
+				result[resultIndex] = arr2[arr2Index];
+				arr2Index++;
+			}
+			resultIndex++;
+			if (arr1Index == arr1.length) {
+				oneFinish = true;
+				result = finishTheRest(result, resultIndex, arr2, arr2Index);
+			}
+			if (arr2Index == arr2.length) {
+				oneFinish = true;
+				result = finishTheRest(result, resultIndex, arr1, arr1Index);
 			}
 		}
 		return result;
 	}
-	
-	private static int updateIndex(int index, Integer[] arr) {
-		if (index < arr.length - 1)
-			return index++;
-		return index;
+
+	private static Integer[] finishTheRest(Integer[] result, int resultIndex, Integer[] arr, int arrIndex) {
+		while (arrIndex < arr.length) {
+			result[resultIndex] = arr[arrIndex];
+			resultIndex++;
+			arrIndex++;
+		}
+		return result;
 	}
-	
 
 	/**
 	 * Sort the array of integers in ascending order according to the comparator
@@ -87,19 +104,17 @@ public class IntegerSorter {
 	 *            The comparator the will be used to compare two integers.
 	 */
 	public static void selectionSort(Integer[] array, Comparator<Integer> comparator) {
-		if (array.length > 1) {
-			for (int i = 0; i < array.length; i++) {
-				int nextIndex = i + 1;
-				int minIndex = nextIndex;
-				for (int j = nextIndex; j < array.length; j++) {
-					int result = comparator.compare(array[minIndex], array[j]);
-					if (result < 0)
-						minIndex = j;
-				}
-				int temp = array[nextIndex];
-				array[nextIndex] = array[minIndex];
-				array[minIndex] = temp;
+		for (int i = 0; i < array.length - 1; i++) {
+			int nextIndex = i + 1;
+			int minIndex = i;
+			for (int j = nextIndex; j < array.length; j++) {
+				int result = comparator.compare(array[minIndex], array[j]);
+				if (result > 0)
+					minIndex = j;
 			}
+			Integer temp = array[i];
+			array[i] = array[minIndex];
+			array[minIndex] = temp;
 		}
 		// throw new UnsupportedOperationException();
 	}
