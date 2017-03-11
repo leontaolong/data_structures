@@ -59,6 +59,5 @@ public class PacketComparator implements Comparator<Packet> {
 		if (p1.getMajorPacketIndex() == p2.getMajorPacketIndex())
 			return p1.getMinorPacketIndex() - p2.getMinorPacketIndex();
 		return p1.getMajorPacketIndex() - p2.getMajorPacketIndex();
-		// throw new UnsupportedOperationException();
 	}
 }

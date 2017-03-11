@@ -1,4 +1,5 @@
 package sorting;
+
 /**
  * A runner class for testing out your PacketSorter's sorting methods. This
  * class will use PacketReceiver to get an array of scrambled packets from the
@@ -32,11 +33,10 @@ package sorting;
  *
  */
 public class ImageDownloader {
-    public static void main(String[] args) {
-        // TODO: Make the call to receive the packets
-        // TODO: Sort the packets by calling one of your methods
-        String imageOutputFilename = "finalImage.jpg";
-        // TODO: Make the correct call to render the images
-    }
-
+	public static void main(String[] args) {
+		Packet[] image = PacketReceiver.receivePackets(); // receive packets
+		PacketSorter.mergeSort(image, new PacketComparator()); // sort packets
+		String imageOutputFilename = "finalImage.jpg";
+		PacketRenderer.renderImage(image, imageOutputFilename); // render image
+	}
 }
